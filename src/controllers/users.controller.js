@@ -1,0 +1,163 @@
+import { db } from "../configs/database.config.js";
+import jwt from "jsonwebtoken";
+export const register = async (req, res) => {
+    try {
+        const queryCheck = `SELECT * FROM users WHERE email = '${req.body.email}'`
+        const [rows] = await db.query(queryCheck)
+        if (rows[0]) {
+            return res.status(400).json({
+                code: "error",
+                message: "Your email is existed!"
+            });
+        }
+
+        const { username, email, password } = req.body;
+        const query = `INSERT INTO users(username,email,password) VALUES('${username}','${email}','${password}')`
+
+        db.query(query);
+        res.status(200).json({
+            code: "success",
+            message: "Accout is created"
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            code: "error",
+            message: "bad request"
+        })
+    }
+}
+
+export const loginSQL = async (req, res) => {
+    try {
+
+        const { email, password } = req.body;
+
+        const query = `
+        SELECT * FROM users 
+        WHERE email = '${email}' 
+        AND password = '${password}'
+        `;
+
+        const [rows] = await db.query(query);
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                code: "error",
+                message: "email or password is incorrect!"
+            });
+        }
+
+        const data = rows[0];
+
+        const token = jwt.sign({
+            id: data.id,
+            username: data.username,
+        }, String(process.env.JWT));
+
+        res.cookie('usersToken', token, {
+            httpOnly: true,
+            maxAge: 2 * 60 * 60 * 1000,
+            secure: String(process.env.ENVIROIMENT) == "dev" ? false : true,
+            sameSite: "lax",
+        });
+
+        res.status(200).json({
+            code: "success",
+            message: "Login complete"
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(400).json({
+            code: "error",
+            message: "bad request"
+        });
+
+    }
+};
+
+export const profileSQL = async (req, res) => {
+    try {
+        const { id } = req.client;
+
+        const query = `SELECT id, username, email, phone, address, created_At, updated_At FROM users WHERE id = ${id}`
+        const [rows] = await db.query(query);
+        const data = rows[0]
+        res.status(200).json({
+            code: "success",
+            data: {
+                id: data.id,
+                username: data.username,
+                email: data.email,
+                phone: "0" + data.phone,
+                address: data.address,
+            }
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            code: "error",
+            message: "bad request"
+        })
+    }
+}
+
+export const updateProfile = async (req, res) => {
+    try {
+        const { id } = req.client;
+        const { username, email, address, phone } = req.body;
+        const queryCheck = `SELECT * FROM users WHERE email = '${email}' AND id != ${id}`;
+        const [rows] = await db.query(queryCheck);
+        if (rows[0]) {
+            return res.status(400).json({
+                code: "error",
+                message: "Your email is existed!"
+            })
+        };
+
+        const query = `UPDATE users SET username = '${username}', email = '${email}', address = '${address}', phone = ${phone} WHERE id = ${id}`
+
+        await db.query(query);
+        res.status(200).json({
+            code: "success",
+            message: "Profile is updated!"
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            code: "error",
+            message: "bad request"
+        })
+    }
+}
+
+export const changePassword = async (req, res) => {
+    try {
+        const { id } = req.client;
+        const { oldPassword, newPassword } = req.body;
+        const queryCheck = `SELECT * FROM users WHERE password = '${oldPassword}' AND id = ${id}`
+        const [rows] = await db.query(queryCheck);
+        if (!rows[0]) {
+            return res.status(400).json({
+                code: "error",
+                message: "Your old password incorrected!"
+            })
+        };
+        const query = `UPDATE users SET password = '${newPassword}' WHERE id = ${id}`
+
+        await db.query(query);
+        res.status(200).json({
+            code: "success",
+            message: "Profile is updated!"
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            code: "error",
+            message: "bad request"
+        })
+    }
+}
