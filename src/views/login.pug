@@ -1,0 +1,21 @@
+extends layouts/main
+
+block content
+  .login-container
+    .login-box
+      h2 Login
+
+      form(action="/login" method="POST")
+        .form-group
+          label Email
+          input(type="text" name="email" placeholder="Enter your email" required)
+
+        .form-group
+          label Password
+          input(type="password" name="password" placeholder="Enter your password" required)
+
+        button.btn(type="submit") Login
+
+      p.footer
+        | Don't have an account? 
+        a(href="/register") Register

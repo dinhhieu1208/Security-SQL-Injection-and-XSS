@@ -1,0 +1,41 @@
+// src/views/layouts/main.pug
+doctype html
+html
+  head
+    title My Shop
+    link(rel="stylesheet", href="/css/style.css")
+  body
+    .container 
+      .header
+        div.header_left
+          a(href="/").logo My E-commerce
+          .search 
+            form(action="")
+              div
+                input(type="text" placeholder="Search")
+
+          
+        div.header_middle
+          .title Products
+          .title Category
+          .title About us
+          .title Contact
+        
+
+        .menu
+          .button 
+            .btn 
+              a(href="/login") Cart
+          if !user
+            .button
+              .btn
+                a(href="/login") Login
+              .btn
+                a(href="/register") Register
+          else
+            .button
+              .btn
+                a(href="/profile").btn Profile
+              .btn
+                a(href="/logout").btn Logout
+      block content

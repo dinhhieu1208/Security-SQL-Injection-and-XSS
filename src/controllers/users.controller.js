@@ -58,7 +58,7 @@ export const loginSQL = async (req, res) => {
         res.cookie('usersToken', token, {
             httpOnly: true,
             maxAge: 2 * 60 * 60 * 1000,
-            secure: String(process.env.ENVIROIMENT) == "dev" ? false : true,
+            secure: false,
             sameSite: "lax",
         });
 
@@ -161,3 +161,56 @@ export const changePassword = async (req, res) => {
         })
     }
 }
+
+//func web
+export const loginSQLweb = async (req, res) => {
+    res.render('login');
+};
+
+export const loginSQLwebApi = async (req, res) => {
+    try {
+
+        const { email, password } = req.body;
+
+        const query = `
+        SELECT * FROM users 
+        WHERE email = '${email}' 
+        AND password = '${password}'
+        `;
+
+        const [rows] = await db.query(query);
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                code: "error",
+                message: "email or password is incorrect!"
+            });
+        }
+
+        const data = rows[0];
+
+        const token = jwt.sign({
+            id: data.id,
+            username: data.username,
+        }, String(process.env.JWT));
+
+        res.cookie('usersToken', token, {
+            httpOnly: true,
+            maxAge: 2 * 60 * 60 * 1000,
+            secure: false,
+            sameSite: "lax",
+        });
+
+        res.redirect("/");
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(400).json({
+            code: "error",
+            message: "bad request"
+        });
+
+    }
+};

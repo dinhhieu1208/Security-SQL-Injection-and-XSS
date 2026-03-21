@@ -37,3 +37,40 @@ export const productDetail = async (req, res) => {
         })
     }
 }
+
+//function web
+export const webProduct = async (req, res) => {
+    try {
+        const token = req.cookies.usersToken;
+        if (token) {
+            let query = `SELECT * FROM products`
+
+            if (req.query.search) {
+                query += ` WHERE productName LIKE '%${req.query.search}%'`
+            }
+            const [rows] = await db.query(query);
+            res.render("index", {
+                name: "Duy",
+                products: rows,
+                user: token
+            })
+        } else {
+            let query = `SELECT * FROM products`
+
+            if (req.query.search) {
+                query += ` WHERE productName LIKE '%${req.query.search}%'`
+            }
+            const [rows] = await db.query(query);
+            res.render("index", {
+                name: "Duy",
+                products: rows,
+            })
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            code: "error",
+            message: "server error"
+        })
+    }
+}
