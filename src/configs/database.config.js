@@ -12,11 +12,11 @@ export const connectDb = async () => {
       database: process.env.DB_NAME,
     });
 
-    console.log("✅ MySQL connected!");
+    console.log("MySQL connected!");
 
   } catch (error) {
 
-    console.log("⏳ MySQL not ready, retrying...");
+    console.log("MySQL not ready, retrying...");
     setTimeout(connectDb, 3000);
 
   }

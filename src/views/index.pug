@@ -1,9 +1,6 @@
 extends layouts/main
 
 block content
-  h1 Welcome to Shop 🛒
-
-  h3 Products
-
-  each product in products
-    include components/product
+  div.product
+    each product in products
+      include components/product

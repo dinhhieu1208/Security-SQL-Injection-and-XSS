@@ -1,5 +1,7 @@
-div.product
-  h4= product.productName
-  p Price: $#{product.price}
-  div 
-    a(href="/product/" + product.id) View
+.box 
+  .image 
+    img(src="/images/2.png", alt="", srcset="")
+  .title #{product.productName}
+  .price $#{product.price}
+  div.button 
+    button.btn Add cart
