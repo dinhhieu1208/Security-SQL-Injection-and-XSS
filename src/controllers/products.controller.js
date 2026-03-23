@@ -48,9 +48,13 @@ export const addProduct = async (req, res) => {
             image: req.file ? req.file.path : null
         };
 
+        const query = `INSERT INTO products (productName, image, status, price, quantity) 
+        VALUES ('${product.productName}', '${product.image}', '${product.status}', '${product.price}', '${product.quantity}');`
+
+        await db.query(query);
         res.status(200).json({
             code: "success",
-            data: product
+            message: "Product create complete"
         });
     } catch (error) {
         console.log(error);
