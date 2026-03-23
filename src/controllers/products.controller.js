@@ -38,6 +38,28 @@ export const productDetail = async (req, res) => {
     }
 }
 
+export const addProduct = async (req, res) => {
+    try {
+        const product = {
+            productName: req.body.productName,
+            price: req.body.price,
+            quantity: req.body.quantity,
+            status: req.body.status,
+            image: req.file ? req.file.path : null
+        };
+
+        res.status(200).json({
+            code: "success",
+            data: product
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            code: "error"
+        });
+    }
+};
+
 //function web
 export const webProduct = async (req, res) => {
     try {
