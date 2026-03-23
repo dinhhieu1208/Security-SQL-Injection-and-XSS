@@ -18,8 +18,8 @@ html
         div.header_middle
           .title Products
           .title Category
-          .title About us
-          .title Contact
+          div.title.about About us
+          div.title.contact Contact
         
 
         .menu
@@ -36,6 +36,6 @@ html
             .button
               .btn
                 a(href="/profile") Profile
-              .btn
-                a(href="/logout") Logout
+              .btn.logout
+                a(href="/logout").logout Logout
       block content
